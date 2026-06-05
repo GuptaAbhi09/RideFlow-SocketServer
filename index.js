@@ -170,14 +170,14 @@ io.on('connection', (socket) => {
   });
 
   /**
-   * 5. Join Ride Room (Customer)
+   * 5. Join Ride Room (Customer & Partner)
    */
   socket.on('join_ride', (data) => {
     const user = connectedUsers.get(socket.id);
-    if (!user || user.role !== 'customer') return;
+    if (!user) return;
     
     socket.join(`ride_${data.rideId}`);
-    console.log(`[Customer ${user.userId}] Joined tracking room: ride_${data.rideId}`);
+    console.log(`[User ${user.userId} - ${user.role}] Joined tracking room: ride_${data.rideId}`);
   });
 
   /**
@@ -216,6 +216,21 @@ io.on('connection', (socket) => {
     // Broadcast to the ride room so the driver sees it
     io.to(`ride_${data.rideId}`).emit('payment_successful', {
       rideId: data.rideId
+    });
+  });
+
+  /**
+   * 8. Ride Status Update (Driver -> Customer)
+   */
+  socket.on('ride_status_updated', (data) => {
+    const user = connectedUsers.get(socket.id);
+    if (!user) return;
+    
+    console.log(`[Ride Status Updated] Ride: ${data.rideId} to ${data.status}`);
+    
+    io.to(`ride_${data.rideId}`).emit('ride_status_updated', {
+      rideId: data.rideId,
+      status: data.status
     });
   });
 
