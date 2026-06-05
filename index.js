@@ -228,6 +228,11 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', activeConnections: connectedUsers.size });
 });
 
+// Keep-alive ping route for UptimeRobot
+app.get('/ping', (req, res) => {
+  res.status(200).send('pong');
+});
+
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
   console.log(`🚀 Socket.IO Server running on port ${PORT}`);
