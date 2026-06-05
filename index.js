@@ -205,6 +205,21 @@ io.on('connection', (socket) => {
   });
 
   /**
+   * 7. Payment Success
+   */
+  socket.on('payment_successful', (data) => {
+    const user = connectedUsers.get(socket.id);
+    if (!user) return;
+
+    console.log(`[Payment Successful] Ride: ${data.rideId}`);
+    
+    // Broadcast to the ride room so the driver sees it
+    io.to(`ride_${data.rideId}`).emit('payment_successful', {
+      rideId: data.rideId
+    });
+  });
+
+  /**
    * Disconnection Handling
    */
   socket.on('disconnect', () => {
