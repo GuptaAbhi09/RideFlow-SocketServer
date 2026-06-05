@@ -1,0 +1,5 @@
+{
+  "events": {
+    "restart": "npx kill-port 4000"
+  }
+}
