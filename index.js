@@ -235,6 +235,24 @@ io.on('connection', (socket) => {
   });
 
   /**
+   * 9. In-App Real-Time Chat
+   */
+  socket.on('send_message', (data) => {
+    const user = connectedUsers.get(socket.id);
+    if (!user) return;
+
+    // data = { rideId, sender, text, timestamp }
+    console.log(`[Chat Message] Ride ${data.rideId} | ${data.sender}: ${data.text}`);
+
+    // Broadcast message to everyone in the ride room (both driver and customer)
+    io.to(`ride_${data.rideId}`).emit('receive_message', {
+      sender: data.sender,
+      text: data.text,
+      timestamp: data.timestamp || new Date()
+    });
+  });
+
+  /**
    * Disconnection Handling
    */
   socket.on('disconnect', () => {
